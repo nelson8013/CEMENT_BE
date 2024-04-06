@@ -8,7 +8,7 @@ const users = async(request, response) => {
      response.status(200).json({users})
  } catch(error){
      console.log(error.message)
-     response.status(500).json(error.message)
+     response.status(500).json({ success: false, message : error.message})
     }
 }
 
@@ -21,7 +21,7 @@ const user = async(request, response) => {
      response.status(200).json({user})
  } catch(error){
      console.log(error.message)
-     response.status(500).json(error.message)
+     response.status(500).json({ success: false, message : error.message})
     }
 }
 
@@ -31,7 +31,7 @@ const createUser = async(request, response) => {
         response.status(201).json({user})
     } catch(error){
         console.log(error.message)
-        response.status(500).json(error.message)
+        response.status(500).json({ success: false, message : error.message})
        }
 }
 

@@ -1,5 +1,27 @@
-import { findAvailableCementQuantityInStore, updateCementQuantity, salesRep, addStore} from '../Services/StoreService.js'
+import { findAvailableCementQuantityInStore, updateCementQuantity, salesRep, addStore, Stores, findStore} from '../Services/StoreService.js'
 
+
+const getStores = async(request, response) => {
+    try{
+        const stores = await Stores();
+        response.status(200).json({stores})
+    } catch(error){
+     console.log(error.message)
+     response.status(500).json({ success: false, message : error.message})
+    }
+}
+
+const getStore = async(request, response) => {
+    if (!request?.params?.storeId) return response.status(400).json({ message: "store id is required." });
+    try{
+        let storeId = request.params.storeId;
+        const store = await findStore(storeId);
+        response.status(200).json({store})
+    } catch(error){
+     console.log(error.message)
+     response.status(500).json({ success: false, message : error.message})
+    }
+}
 
 const getSalesRep = async(request, response) => {
     if (!request?.params?.storeId) return response.status(400).json({ message: "store id is required." });
@@ -9,7 +31,7 @@ const getSalesRep = async(request, response) => {
         response.status(200).json({salesRepresentative})
     } catch(error){
      console.log(error.message)
-     response.status(500).json(error.message)
+     response.status(500).json({ success: false, message : error.message})
     }
 }
 
@@ -21,7 +43,7 @@ const getAvailableCementQuantityInStore = async(request, response) => {
         response.status(200).json({quantity})
     } catch(error){
      console.log(error.message)
-     response.status(500).json(error.message)
+     response.status(500).json({ success: false, message : error.message})
     }
 }
 
@@ -31,7 +53,7 @@ const createStore = async(request, response) => {
         response.status(201).json({store})
     } catch(error){
         console.log(error.message)
-        response.status(500).json(error.message)
+        response.status(500).json({ success: false, message : error.message})
        }
 
 }
@@ -45,10 +67,14 @@ const updateCementQuantityInStore = async(request, response) => {
         response.status(201).json({quantity})
     } catch(error){
         console.log(error.message)
-        response.status(500).json(error.message)
+        response.status(500).json({ success: false, message : error.message})
        }
 }
 
 
 
-export  {getSalesRep, getAvailableCementQuantityInStore, updateCementQuantityInStore, createStore }
+export  {
+    getStores, getStore, getSalesRep, 
+    getAvailableCementQuantityInStore, 
+    updateCementQuantityInStore, createStore 
+}

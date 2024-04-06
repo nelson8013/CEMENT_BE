@@ -26,12 +26,15 @@ const addUser = async(request) => {
         throw new RequiredFieldsException(`All fields are required.`);
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+
     const newUser = {
         first_name,
         last_name,
         email,
         phone,
-        password,
+        password : hashedPassword,
         role,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()

@@ -22,7 +22,7 @@ const getAllStores = async () => {
 */
 const getStore = async ( storeId ) => {
    try{
-    return await Store.findById(storeId).populate('sales_rep', 'first_name', 'last_name', 'email', 'phone')
+    return await Store.findOne({_id : storeId}).populate('sales_rep', 'first_name last_name email phone')
   } catch(error) {
     console.log(error.message)
   }
@@ -67,7 +67,8 @@ const getStoreSalesRep = async ( storeId ) => {
  */
 const getAvailableCementQuantityInStore = async ( storeId ) => {
   try{
-   let store = getStore(storeId)
+   let store = await getStore(storeId)
+   console.log("THE STOREEE:", store.quantity_in_store);
    if (!store) throw new Error('Store not found')
 
    return store.quantity_in_store
@@ -98,8 +99,24 @@ const updateCementQuantityInStore = async ( storeId, quantityToAdd ) => {
    }
 }
 
+const updateQuantity = async( quantity) => {
+  return await Store.findByIdAndUpdate(sold_at, { $inc: { quantity_in_store: -quantity } });
+}
+
+
+ /**
+ * Fetch the store associated with the sold_by user.
+ *
+ * @param {string} sold_by - The User ID of the sales representative at a store.
+ * @return {Promise<object>} The store object associated with the sold_by user.
+ */
+const storeSalesRep = async (sold_by) => {
+  return await Store.findOne({ sales_rep: sold_by });
+}
 export {
  getStore,
+ storeSalesRep,
+ updateQuantity,
  getAllStores,
  createStore,
  getAvailableCementQuantityInStore,

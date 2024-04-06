@@ -8,7 +8,7 @@ const products = async(request, response) => {
      response.status(200).json({products})
  } catch(error){
      console.log(error.message)
-     response.status(500).json(error.message)
+     response.status(500).json({ success: false, message : error.message})
     }
 }
 
@@ -21,7 +21,7 @@ const product = async(request, response) => {
      response.status(200).json({product})
  } catch(error){
      console.log(error.message)
-     response.status(500).json(error.message)
+     response.status(500).json({ success: false, message : error.message})
     }
 }
 
@@ -31,7 +31,7 @@ const createProduct = async(request, response) => {
         response.status(201).json({product})
     } catch(error){
         console.log(error.message)
-        response.status(500).json(error.message)
+        response.status(500).json({ success: false, message : error.message})
        }
 }
 

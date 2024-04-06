@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
 
 const SalesSchema = new mongoose.Schema({
     buyers_phone: {
-      type: Number,
+      type: String,
       required: true
     },
     selling_price: {
