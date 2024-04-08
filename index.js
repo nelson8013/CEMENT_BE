@@ -1,14 +1,17 @@
 import dotenv from 'dotenv'
 dotenv.config();
 
-import cors         from 'cors'
-import session      from 'express-session'
-import mongoose     from 'mongoose'
-import connection   from './Config/connection.js'
-import credentials  from './Middlewares/credentials.js'
-import CorsOptions  from './Config/corsOptions.js'
-import cookieParser from 'cookie-parser'
-import express      from 'express'
+import cors          from 'cors'
+import session       from 'express-session'
+import mongoose      from 'mongoose'
+import connectMongo  from 'connect-mongo'
+import connection    from './Config/connection.js'
+import credentials   from './Middlewares/credentials.js'
+import CorsOptions   from './Config/corsOptions.js'
+import cookieParser  from 'cookie-parser'
+import express       from 'express'
+import verifyJWT     from './Middlewares/verifyJWT.js'
+import sessionConfig from './Config/sessionConfig.js'
 
 
 import Products     from './Routes/products.js';
@@ -21,7 +24,8 @@ import Quantity     from './Routes/storeQuantity.js';
 import StoreRep     from './Routes/storeRep.js';
 import Users        from './Routes/users.js';
 import AddUser      from './Routes/addUser.js';
-import Login        from './Routes/login.js';
+import Login        from './Routes/auth.js';
+import Logout       from './Routes/auth.js';
 
 import Sales        from './Routes/sales.js';
 import StoreSales   from './Routes/storeSales.js';
@@ -37,7 +41,8 @@ const PORT = process.env.PORT || 5001;
 
 connection();
 
-app.use(session({secret: process.env.SECRET, resave: true, saveUninitialized: true, cookie: { secure: false }}));
+
+app.use(session(sessionConfig(process.env.SECRET, process.env.CEMENT_SESSION_STORE_URI)));
 app.use(credentials);
 app.use(cors(CorsOptions));
 app.use(express.urlencoded({ extended: false }));
@@ -46,28 +51,35 @@ app.use(cookieParser());
 
 
 /* Products */
-app.use("/api/products",       Products);
-app.use("/api/product",        Product);
-app.use("/api/add-product",    AddProduct);
+app.use("/api/products",     verifyJWT,  Products);
+app.use("/api/product",      verifyJWT,  Product);
+app.use("/api/add-product",  verifyJWT,  AddProduct);
 
 /* Stores */
-app.use("/api/stores",         Stores);
-app.use("/api/store",          Store);
-app.use("/api/add-store",      AddStore);
-app.use("/api/get-store-qty",  Quantity);
-app.use("/api/get-store-rep",  StoreRep);
+app.use("/api/stores",       verifyJWT,  Stores);
+app.use("/api/store",        verifyJWT,  Store);
+app.use("/api/add-store",    verifyJWT,  AddStore);
+app.use("/api/get-store-qty",verifyJWT,  Quantity);
+app.use("/api/get-store-rep",verifyJWT,  StoreRep);
 
 
 /* Sales */
-app.use("/api/sales",          Sales);
-app.use("/api/sale",           Sale);
-app.use("/api/salesFromStore", StoreSales);
-app.use("/api/salesStore",     SalesStore);
-app.use("/api/get-sale-qty",   SaleQuantity);
-app.use("/api/make-sale",      MakeSale);
+app.use("/api/sales",         verifyJWT, Sales);
+app.use("/api/sale",          verifyJWT, Sale);
+app.use("/api/salesFromStore",verifyJWT, StoreSales);
+app.use("/api/salesStore",    verifyJWT, SalesStore);
+app.use("/api/get-sale-qty",  verifyJWT, SaleQuantity);
+app.use("/api/make-sale",     verifyJWT, MakeSale);
+
+
+/* Authentication */
+app.use("/api/login", Login)
+app.use("/api/logout", Logout)
+
+
 
 /* Users */
-app.use("/api/User",           Users);
+app.use("/api/User",          verifyJWT, Users);
 app.use("/api/add-user",       AddUser);
 
 

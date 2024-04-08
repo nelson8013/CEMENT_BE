@@ -3,4 +3,4 @@ class InvalidCredentialsException extends Error {
      super(message)
  }
 }
-module.exports = InvalidCredentialsException
+export default InvalidCredentialsException

@@ -23,6 +23,22 @@ const getUser = async (userId) => {
   }
 }
 
+const getUserByEmail = async (email) => {
+  try{
+   return await User.findOne({email : email})
+ } catch(error) {
+   console.log(error.message)
+ }
+}
+
+const getUserByPhone = async (phone) => {
+  try{
+   return await User.findOne({phone : phone})
+ } catch(error) {
+   console.log(error.message)
+ }
+}
+
 const createUser = async( newUser) => {
     try{
         return await User.create(newUser);
@@ -31,4 +47,4 @@ const createUser = async( newUser) => {
     }
 }
 
-export {getUser, getAllUsers, createUser}
+export {getUser, getAllUsers, createUser, getUserByEmail, getUserByPhone}
