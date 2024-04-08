@@ -1,4 +1,4 @@
-import { getProduct, getAllProducts, createProduct } from '../Repositories/ProductRepository.js'
+import { getProduct, getAllProducts, createProduct, updateQuantity, deactivateProduct } from '../Repositories/ProductRepository.js'
 import NotFoundException from '../Exceptions/NotFoundException.js'
 import RequiredFieldsException from '../Exceptions/RequiredFieldsException.js'
 import { request, response } from 'express'
@@ -44,5 +44,31 @@ const addProduct = async(request) => {
     }
 }
 
+const updateProductQuantity = async (productId, updatedQuantity) => {
+    try {
+        return await updateQuantity(productId, updatedQuantity )
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to update product quantity.');
+    }
+};
 
-export {findProducts, findProduct, addProduct}
+const subtractAndUpdateInventory =  async (productId, subtractValue) => {
+    let product = await findProduct(productId)
+
+    let updatedQuantity = product.data.quantity - subtractValue 
+
+    if (updatedQuantity < 0) throw new Error('Subtraction value exceeds the current quantity.')
+
+    if (updatedQuantity == 0) await deactivateProduct(productId)
+    
+    
+
+    await updateProductQuantity(productId, updatedQuantity);
+
+    return { message: 'Inventory updated successfully.' };
+}
+
+export { findProducts, findProduct, addProduct, updateProductQuantity, subtractAndUpdateInventory };
+
+// export default {findProducts, findProduct, addProduct, updateProductQuantity, subtractAndUpdateInventory}

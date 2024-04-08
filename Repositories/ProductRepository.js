@@ -31,8 +31,23 @@ const createProduct = async( newProduct) => {
     }
 }
 
+const updateQuantity = async(productId, quantity) => {
+  return await Product.findByIdAndUpdate(productId, { quantity: quantity }, { new: true });
+}
+
+const deactivateProduct = async(productId) => {
+  return await Product.findByIdAndUpdate(productId, { isActive: false }, { new: true });
+}
+
+const activateProduct = async(productId) => {
+  return await Product.findByIdAndUpdate(productId, { isActive: true }, { new: true });
+}
+
 export {
  getProduct,
  getAllProducts,
+ updateQuantity,
+ activateProduct,
+ deactivateProduct,
  createProduct
 }

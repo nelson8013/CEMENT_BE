@@ -9,6 +9,7 @@ import {
  getStoreSalesRep
 } from '../Repositories/StoreRepository.js'
 import NotFoundException from '../Exceptions/NotFoundException.js'
+import {subtractAndUpdateInventory} from '../Services/ProductService.js'
 
 
 
@@ -20,7 +21,7 @@ const Stores  = async () => {
 
 const addStore  = async (request) => {
    try{
-     const { name, address, quantity_in_store, sales_rep } = request.body;
+     const { name, address, quantity_in_store, sales_rep, productId } = request.body;
      
      if(!name || !address || !quantity_in_store || !sales_rep){
          throw new RequiredFieldsException(`All fields are required.`);
@@ -28,6 +29,8 @@ const addStore  = async (request) => {
      const newStore = { name, address, quantity_in_store, sales_rep }
      
      let store = await createStore(newStore);
+
+     await subtractAndUpdateInventory(productId, quantity_in_store)
 
      return { data: store, message: "Store created successfully" };
    } catch(error) {
@@ -72,4 +75,4 @@ const getStoreOfSalesRep = async (sold_by) => {
 }
 
 
-export {getStoreOfSalesRep, updateQuantityAfterSale, Stores, addStore, findStore, findAvailableCementQuantityInStore, updateCementQuantity, salesRep}
+export  {getStoreOfSalesRep, updateQuantityAfterSale, Stores, addStore, findStore, findAvailableCementQuantityInStore, updateCementQuantity, salesRep}

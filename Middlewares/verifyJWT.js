@@ -1,14 +1,25 @@
 import jwt from 'jsonwebtoken';
 
 const verifyJWT = (request, response, next) => {
-  const token = request.headers['x-access-token'] || request.headers['authorization'];
+  
+  const authorizationHeader  = request.headers['x-access-token'] || request.headers['authorization'];
 
-  if (!token) {
-    return response.status(401).json({ message: 'Your access token is missing. Please login!' });
-  }
+  if (!authorizationHeader) return response.status(401).json({ message: 'Your access token is missing. Please login!' });
+  
 
+    // Split the header value by space to separate "Bearer" from the token
+    const [bearer, token] = authorizationHeader.split(' ');
+
+
+    if (bearer !== 'Bearer' || !token) {
+      return response.status(401).json({ message: 'Invalid authorization header format' });
+    }
+
+    
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    console.log("VERIFIED TOKEN: ", process.env.ACCESS_TOKEN_SECRET);
     request.user = decoded;
     next();
   } catch (error) {

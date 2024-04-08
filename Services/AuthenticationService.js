@@ -17,22 +17,27 @@ const login = async (request, response) => {
 
     if (!passwordMatch) throw new InvalidCredentialsException(`Invalid credentials provided.`)
 
-    const token = jwt.sign(
-      { 
-       id:    user._id, 
-       email: user.first_name, 
-       email: user.last_name, 
-       email: user.email, 
-       phone: user.phone 
+    const token = jwt.sign({ 
+       id:        user._id, 
+       first_name:user.first_name, 
+       last_name: user.last_name, 
+       email:     user.email, 
+       phone:     user.phone 
       }, 
       process.env.ACCESS_TOKEN_SECRET, 
-      { expiresIn: '1h' }
-     )
+      { expiresIn: '1h' })
 
-    user.isLoggedIn   = true
-    await user.save();
+      const refreshToken = process.env.REFRESH_TOKEN_SECRET
 
-    return { token: token, message: "Logged In successfully" };
+      user.isLoggedIn   = true
+
+      await user.save();
+
+      request.session.accessToken = token;
+    
+      request.session.save()
+
+      return { token: token, message: "Logged In successfully" };
 
   } catch (error) {
     console.error(error);
@@ -48,15 +53,13 @@ const logout = async (request) => {
 
     if (!user) throw new UserNotFoundException(`The user with email: ${email} does not exist.`);
 
-    if (request.session) request.session.destroy();
-    
+    if (request.session) {
+     request.session.destroy();
+    }
 
    user.isLoggedIn = false;
    await user.save();
 
-   
-   // There's no need to do anything on the server side because JWT tokens are stateless
-   // The client can simply discard the token
 
    return { message: 'Logged out successfully' };
  } catch (error) {

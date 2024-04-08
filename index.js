@@ -24,8 +24,8 @@ import Quantity     from './Routes/storeQuantity.js';
 import StoreRep     from './Routes/storeRep.js';
 import Users        from './Routes/users.js';
 import AddUser      from './Routes/addUser.js';
-import Login        from './Routes/auth.js';
-import Logout       from './Routes/auth.js';
+import Login        from './Routes/login.js';
+import Logout       from './Routes/logout.js';
 
 import Sales        from './Routes/sales.js';
 import StoreSales   from './Routes/storeSales.js';
@@ -74,7 +74,7 @@ app.use("/api/make-sale",     verifyJWT, MakeSale);
 
 /* Authentication */
 app.use("/api/login", Login)
-app.use("/api/logout", Logout)
+app.use("/api/logout",  Logout)
 
 
 
