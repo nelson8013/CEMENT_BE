@@ -6,10 +6,18 @@ import {
  createStore,
  getAvailableCementQuantityInStore,
  updateCementQuantityInStore,
- getStoreSalesRep
+ getStoreSalesRep,
+ getStoreByAddress,
+ getStoreByName,
+ getStoreBySalesRep,
+ getStoreWithSalesRep
 } from '../Repositories/StoreRepository.js'
 import NotFoundException from '../Exceptions/NotFoundException.js'
 import {subtractAndUpdateInventory} from '../Services/ProductService.js'
+import RequiredFieldsException from '../Exceptions/RequiredFieldsException.js'
+import StoreAlreadyExistsException from '../Exceptions/StoreAlreadyExistsException.js'
+import OutOfStockException from '../Exceptions/OutOfStockException.js'
+
 
 
 
@@ -19,18 +27,33 @@ const Stores  = async () => {
  return { data: store, message: "Stores retrieved successfully" };
 }
 
+const findStore  = async (storeId) => {
+  let store = await getStore(storeId);
+  return { data: store, message: "Store retrieved successfully" };
+ }
+
 const addStore  = async (request) => {
    try{
-     const { name, address, quantity_in_store, sales_rep, productId } = request.body;
+     const { name, address, sales_rep} = request.body;
      
-     if(!name || !address || !quantity_in_store || !sales_rep){
+     if(!name || !address || !sales_rep){
          throw new RequiredFieldsException(`All fields are required.`);
      }
-     const newStore = { name, address, quantity_in_store, sales_rep }
+
+     const duplicateName    = await getStoreByName(name);
+     const duplicateAddress = await getStoreByAddress(address);
+     const duplicateRep     = await getStoreBySalesRep(sales_rep);
+
+     if (duplicateName || duplicateAddress || duplicateRep) {
+      throw new StoreAlreadyExistsException( "This store already exists" );
+     }
+
+
+     const newStore = { name, address, sales_rep }
      
      let store = await createStore(newStore);
 
-     await subtractAndUpdateInventory(productId, quantity_in_store)
+     //await subtractAndUpdateInventory(productId, quantity_in_store)
 
      return { data: store, message: "Store created successfully" };
    } catch(error) {
@@ -38,20 +61,18 @@ const addStore  = async (request) => {
    }
 }
 
-const findStore  = async (storeId) => {
- let store = await getStore(storeId);
- if(!store) throw new NotFoundException(`A store with the Id : ${storeId} does not exist.`);
- return { data: store, message: "Store retrieved successfully" };
-}
+
 
 const findAvailableCementQuantityInStore  = async (storeId) => {
  let quantity = await getAvailableCementQuantityInStore(storeId);
- if(!quantity) throw new NotFoundException(`A store with the Id : ${storeId} does not exist.`);
+ if(quantity == 0) throw new OutOfStockException(`The store is out of stock.`);
  return { data: quantity, message: "Quantity retrieved successfully" };
 }
 
 
-const updateCementQuantity = async ( storeId, quantityToAdd) => {
+const updateCementQuantity = async ( storeId,request) => {
+  const { quantityToAdd } = request.body;
+  //TODO: CHECK IF THE IS A PRODUCT WITH QUANTITY EQUAL TO OR MORE THAN THE QUANTITY TO ADD
  let updateQuantity = await updateCementQuantityInStore(storeId, quantityToAdd);
  return { data: updateQuantity, message: "Quantity updated successfully" };
 }
@@ -63,8 +84,8 @@ const updateQuantityAfterSale = async (  quantity) => {
  }
 
 const salesRep = async (storeId) => {
- let rep = await getStoreSalesRep(storeId);
- if(!rep) throw new NotFoundException(`A store with the Id : ${storeId} does not exist.`);
+ let rep = await getStoreWithSalesRep(storeId);
+ rep = rep.sales_rep
  return { data: rep, message: "Sales representative retrieved successfully" };
 }
 

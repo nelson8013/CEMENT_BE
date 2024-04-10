@@ -11,7 +11,7 @@ const StoreSchema = new mongoose.Schema({
     },
     quantity_in_store: {
       type: Number,
-      required: true
+      default: 0
     },
     sales_rep: {
      type: mongoose.Schema.Types.ObjectId,

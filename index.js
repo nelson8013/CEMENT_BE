@@ -33,6 +33,7 @@ import SalesStore   from './Routes/SalesStore.js';
 import Sale         from './Routes/sale.js';
 import SaleQuantity from './Routes/saleQuantity.js';
 import MakeSale     from './Routes/makeSale.js';
+import AddProductToStore from './Routes/addProductToStore.js'
 
 
 const app  = express()
@@ -51,25 +52,26 @@ app.use(cookieParser());
 
 
 /* Products */
-app.use("/api/products",     verifyJWT,  Products);
-app.use("/api/product",      verifyJWT,  Product);
-app.use("/api/add-product",  verifyJWT,  AddProduct);
+app.use("/api/products",          verifyJWT, Products);
+app.use("/api/product",           verifyJWT, Product);
+app.use("/api/add-product",       verifyJWT, AddProduct);
 
 /* Stores */
-app.use("/api/stores",       verifyJWT,  Stores);
-app.use("/api/store",        verifyJWT,  Store);
-app.use("/api/add-store",    verifyJWT,  AddStore);
-app.use("/api/get-store-qty",verifyJWT,  Quantity);
-app.use("/api/get-store-rep",verifyJWT,  StoreRep);
+app.use("/api/stores",            verifyJWT, Stores);
+app.use("/api/store",             verifyJWT, Store);
+app.use("/api/add-store",         verifyJWT, AddStore);
+app.use("/api/get-store-qty",     verifyJWT, Quantity);
+app.use("/api/get-store-rep",     verifyJWT, StoreRep);
+app.use("/api/addProductToStore", verifyJWT, AddProductToStore);
 
 
 /* Sales */
-app.use("/api/sales",         verifyJWT, Sales);
-app.use("/api/sale",          verifyJWT, Sale);
-app.use("/api/salesFromStore",verifyJWT, StoreSales);
-app.use("/api/salesStore",    verifyJWT, SalesStore);
-app.use("/api/get-sale-qty",  verifyJWT, SaleQuantity);
-app.use("/api/make-sale",     verifyJWT, MakeSale);
+app.use("/api/sales",             verifyJWT, Sales);
+app.use("/api/sale",              verifyJWT, Sale);
+app.use("/api/salesFromStore",    verifyJWT, StoreSales);
+app.use("/api/salesStore",        verifyJWT, SalesStore);
+app.use("/api/get-sale-qty",      verifyJWT, SaleQuantity);
+app.use("/api/make-sale",         verifyJWT, MakeSale);
 
 
 /* Authentication */

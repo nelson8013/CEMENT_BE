@@ -19,7 +19,6 @@ const verifyJWT = (request, response, next) => {
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    console.log("VERIFIED TOKEN: ", process.env.ACCESS_TOKEN_SECRET);
     request.user = decoded;
     next();
   } catch (error) {

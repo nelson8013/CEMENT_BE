@@ -22,11 +22,48 @@ const getAllStores = async () => {
 */
 const getStore = async ( storeId ) => {
    try{
-    return await Store.findOne({_id : storeId}).populate('sales_rep', 'first_name last_name email phone')
+    let store = await Store.findOne({_id : storeId}).exec()
+    if (!store) throw new Error('Store not found')
+    return store
   } catch(error) {
     console.log(error.message)
   }
 }
+
+const getStoreWithSalesRep = async ( storeId ) => {
+  try{
+   let store = await Store.findOne({_id : storeId}).populate('sales_rep', 'first_name last_name email phone')
+   if (!store) throw new Error('Store not found')
+   return store
+ } catch(error) {
+   console.log(error.message)
+ }
+}
+
+const getStoreByName = async ( storeName ) => {
+  try{
+      return await Store.findOne({ name: storeName }).exec();
+    } catch(error) {
+      console.log(error.message)
+    }
+  }
+
+  const getStoreByAddress = async ( storeAddress ) => {
+    try{
+        return await Store.findOne({ address: storeAddress }).exec();
+      } catch(error) {
+        console.log(error.message)
+      }
+  }
+
+  const getStoreBySalesRep = async ( salesRep ) => {
+    try{
+        return await Store.findOne({ sales_rep: salesRep }).exec();
+      } catch(error) {
+        console.log(error.message)
+      }
+  }
+
 
 
 /**
@@ -52,7 +89,6 @@ const createStore = async( newStore ) => {
 const getStoreSalesRep = async ( storeId ) => {
  try{
     let store = await getStore(storeId)
-    if (!store) throw new Error('Store not found')
     return store.sales_rep
   } catch(error) {
    console.log(error.message);
@@ -68,8 +104,6 @@ const getStoreSalesRep = async ( storeId ) => {
 const getAvailableCementQuantityInStore = async ( storeId ) => {
   try{
    let store = await getStore(storeId)
-   console.log("THE STOREEE:", store.quantity_in_store);
-   if (!store) throw new Error('Store not found')
 
    return store.quantity_in_store
   } catch(error) {
@@ -121,5 +155,9 @@ export {
  createStore,
  getAvailableCementQuantityInStore,
  updateCementQuantityInStore,
- getStoreSalesRep
+ getStoreSalesRep,
+ getStoreBySalesRep,
+ getStoreByAddress,
+ getStoreWithSalesRep,
+ getStoreByName
 }
